@@ -38,4 +38,4 @@ spec:
       targetPort: 8000
   selector: 
     app: whoaim
-  type: ClusterIP
+  type: NodePort
