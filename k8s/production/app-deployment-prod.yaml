@@ -1,0 +1,41 @@
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  labels: 
+    app: whoaim
+  name: myapp-deployment
+spec: 
+  replicas: 4
+  selector: 
+    matchLabels: 
+      app: whoaim
+  template: 
+    metadata: 
+      labels: 
+        app: whoaim
+        env: production
+    spec: 
+      containers: 
+        - 
+          image: acrdemo3.azurecr.io/whoaim:v1.0.0
+          name: whoaim
+          ports: 
+            - 
+              containerPort: 8000
+      imagePullSecrets: 
+        - 
+          name: acr-auth
+--- 
+apiVersion: v1
+kind: Service
+metadata: 
+  name: whoaim
+spec: 
+  ports: 
+    - 
+      port: 80
+      targetPort: 8000
+  selector: 
+    app: whoaim
+  type: LoadBalancer
