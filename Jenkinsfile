@@ -23,7 +23,7 @@ node {
     case "canary":
         // Change deployed image in canary to the one we just built
         sh("sudo kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || sudo kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
-        withCredentials([usernamePassword(credentialsId: 'acr_auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        withCredentials([usernamePassword(credentialsId: 'acr-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
           sh "sudo kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
         } 
         sh("sed -i.bak 's#${appRepo}#${imageTag}#' ./k8s/canary/*.yaml")
@@ -35,7 +35,7 @@ node {
     case "master":
         // Change deployed image in master to the one we just built
         sh("sudo kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || sudo kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
-        withCredentials([usernamePassword(credentialsId: 'acr_auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        withCredentials([usernamePassword(credentialsId: 'acr-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
           sh "sudo kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
         } 
         sh("sed -i.bak 's#${appRepo}#${imageTag}#' ./k8s/production/*.yaml")
@@ -46,7 +46,7 @@ node {
     case "dev":
         // Change deployed image in master to the one we just built
         sh("sudo kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || sudo kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
-        withCredentials([usernamePassword(credentialsId: 'acr_auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        withCredentials([usernamePassword(credentialsId: 'acr-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
           sh "sudo kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
         } 
         sh("sed -i.bak 's#${appRepo}#${imageTag}#' ./k8s/dev/*.yaml")
@@ -59,7 +59,7 @@ node {
     case "stage":
         // Change deployed image in master to the one we just built
         sh("sudo kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || sudo kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
-        withCredentials([usernamePassword(credentialsId: 'acr_auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        withCredentials([usernamePassword(credentialsId: 'acr-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
           sh "sudo kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
         } 
         sh("sed -i.bak 's#${appRepo}#${imageTag}#' ./k8s/stage/*.yaml")
@@ -72,7 +72,7 @@ node {
     default:
         // Create namespace if it doesn't exist
         sh("sudo kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || sudo kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
-        withCredentials([usernamePassword(credentialsId: 'acr_auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        withCredentials([usernamePassword(credentialsId: 'acr-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
           sh "sudo kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
         }  
         sh("sed -i.bak 's#${appRepo}#${imageTag}#' ./k8s/dev/*.yaml")
