@@ -53,7 +53,7 @@ node {
         sh("sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} apply -f k8s/dev/")
         sh("echo http://`sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} get service/${appName} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${appName}")
         echo 'To access your environment run `kubectl proxy`'
-        echo "Then access your service via http://localhost:8001/api/v1/namespaces/${appName}-${env.BRANCH_NAME}/services/${appName}:80/proxy/"     
+        echo "Then access your service via http://localhost:8001/api/v1g/namespaces/${appName}-${env.BRANCH_NAME}/services/${appName}:80/proxy/"     
         break
     
     case "stage":
