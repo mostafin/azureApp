@@ -22,61 +22,61 @@ node {
     // Roll out to canary environment
     case "canary":
         // Change deployed image in canary to the one we just built
-        sh("kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
+        sh("sudo kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || sudo kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
         withCredentials([usernamePassword(credentialsId: 'acr_auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-          sh "kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
+          sh "sudo kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
         } 
         sh("sed -i.bak 's#${appRepo}#${imageTag}#' ./k8s/canary/*.yaml")
-        sh("kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} apply -f k8s/canary/")
-        sh("echo http://`kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} get service/${appName} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${appName}")
+        sh("sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} apply -f k8s/canary/")
+        sh("echo http://`sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} get service/${appName} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${appName}")
         break
 
     // Roll out to production
     case "master":
         // Change deployed image in master to the one we just built
-        sh("kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
+        sh("sudo kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || sudo kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
         withCredentials([usernamePassword(credentialsId: 'acr_auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-          sh "kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
+          sh "sudo kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
         } 
         sh("sed -i.bak 's#${appRepo}#${imageTag}#' ./k8s/production/*.yaml")
-        sh("kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} apply -f k8s/production/")
-        sh("echo http://`kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} get service/${appName} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${appName}")
+        sh("sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} apply -f k8s/production/")
+        sh("echo http://`sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} get service/${appName} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${appName}")
         break
     
     case "dev":
         // Change deployed image in master to the one we just built
-        sh("kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
+        sh("sudo kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || sudo kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
         withCredentials([usernamePassword(credentialsId: 'acr_auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-          sh "kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
+          sh "sudo kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
         } 
         sh("sed -i.bak 's#${appRepo}#${imageTag}#' ./k8s/dev/*.yaml")
-        sh("kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} apply -f k8s/dev/")
-        sh("echo http://`kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} get service/${appName} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${appName}")
+        sh("sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} apply -f k8s/dev/")
+        sh("echo http://`sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} get service/${appName} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${appName}")
         echo 'To access your environment run `kubectl proxy`'
         echo "Then access your service via http://localhost:8001/api/v1/namespaces/${appName}-${env.BRANCH_NAME}/services/${appName}:80/proxy/"     
         break
     
     case "stage":
         // Change deployed image in master to the one we just built
-        sh("kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
+        sh("sudo kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || sudo kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
         withCredentials([usernamePassword(credentialsId: 'acr_auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-          sh "kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
+          sh "sudo kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
         } 
         sh("sed -i.bak 's#${appRepo}#${imageTag}#' ./k8s/stage/*.yaml")
-        sh("kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} apply -f k8s/stage/")
-        sh("echo http://`kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} get service/${appName} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${appName}")
+        sh("sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} apply -f k8s/stage/")
+        sh("echo http://`sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} get service/${appName} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${appName}")
         break
 
 
     // Roll out a default branch with dev environment 
     default:
         // Create namespace if it doesn't exist
-        sh("kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
+        sh("sudo kubectl --kubeconfig ~mostafin/.kube/config get ns ${appName}-${env.BRANCH_NAME} || sudo kubectl --kubeconfig ~mostafin/.kube/config create ns ${appName}-${env.BRANCH_NAME}")
         withCredentials([usernamePassword(credentialsId: 'acr_auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-          sh "kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
+          sh "sudo kubectl --kubeconfig ~mostafin/.kube/config -n ${appName}-${env.BRANCH_NAME} get secret acr-auth || sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} create secret docker-registry acr-auth --docker-server ${acr} --docker-username $USERNAME --docker-password $PASSWORD"
         }  
         sh("sed -i.bak 's#${appRepo}#${imageTag}#' ./k8s/dev/*.yaml")
-        sh("kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} apply -f k8s/dev/")
+        sh("sudo kubectl --kubeconfig ~mostafin/.kube/config --namespace=${appName}-${env.BRANCH_NAME} apply -f k8s/dev/")
         echo 'To access your environment run `kubectl proxy`'
         echo "Then access your service via http://localhost:8001/api/v1/namespaces/${appName}-${env.BRANCH_NAME}/services/${appName}:80/proxy/"     
     }
