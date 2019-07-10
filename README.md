@@ -1,4 +1,4 @@
-whoami
+azureApp
 ======
 
-Simple HTTP docker service that prints it's container ID
+CI/CD using AzureDevOps with simple Python App
